@@ -8,7 +8,7 @@ CC = clang++
 # -g: Include debugging symbols
 # -march=native: Optimize for current CPU architecture
 # -fno-omit-frame-pointer: Better profiling support
-CXXFLAGS = -std=c++11 -Wall -Wextra -O2 -g -march=native -fno-omit-frame-pointer
+CXXFLAGS = -std=c++11 -Wall -Wextra -O2 -g -march=native -fno-omit-frame-pointer -I.
 
 # Target executable name
 TARGET = cache_benchmark

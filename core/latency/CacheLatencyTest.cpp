@@ -9,20 +9,9 @@
 #include <iostream>
 #include <iomanip>
 
-#define CPU_GHZ 2.1;
+#include "platform/cpu_utils.h"
 
-/**
- * Reads the Time Stamp Counter (TSC) register using inline assembly.
- *
- * @return uint64_t The current value of the Time Stamp Counter
- * @note This function uses inline assembly and is x86-specific
- * @warning TSC may not be synchronized across CPU cores on some systems
- */
-inline uint64_t rdtsc() {
-    unsigned int low, high;
-    __asm__ __volatile__ ("rdtsc" : "=a" (low), "=d" (high));
-    return ((uint64_t) high << 32) | low;
-}
+#define CPU_GHZ 2.1;
 
 class CacheLatencyTest {
     private:
@@ -58,7 +47,7 @@ class CacheLatencyTest {
         }
 
         // Fisher-Yates shuffle for randomization
-        unsigned int seed = rdtsc(); // Use TSC for seed
+        unsigned int seed = platform::rdtsc(); // Use TSC for seed
         for (size_t i = num_nodes - 1; i > 0; --i) {
             size_t j = rand_r(&seed) % (i+1);
             std::swap(indices[i], indices[j]);
@@ -113,11 +102,11 @@ class CacheLatencyTest {
             p = p->next;
         }
 
-        uint64_t start = rdtsc();
+        uint64_t start = platform::rdtsc();
         for (uint64_t i = 0; i < chase_count; ++i) {
             p = p->next;
         }
-        uint64_t end = rdtsc();
+        uint64_t end = platform::rdtsc();
 
         //Prevent the compiler for optimziing away the loop
         if (p == nullptr) {

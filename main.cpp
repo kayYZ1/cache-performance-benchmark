@@ -1,5 +1,6 @@
 #include <iostream>
-#include "tests/latency/CacheLatencyTest.cpp"
+
+#include "core/latency/CacheLatencyTest.cpp"
 
 int main() {
     std::cout << "Cache performance tests for AMD Ryzen 5 3500U" << std::endl;
