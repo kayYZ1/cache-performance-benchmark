@@ -72,6 +72,8 @@ class CacheLatencyTest {
         uint64_t iterations;
     };
 
+    CacheLatencyTest() {}
+
     ~CacheLatencyTest() {
         for (Node* ptr : allocated_memory) {
             delete[] ptr;

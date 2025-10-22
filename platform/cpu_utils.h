@@ -1,6 +1,7 @@
-#pragma once
-
 #include <cstdint>
+
+#ifndef PLATFORM_CPU_UTILS_H
+#define PLATFORM_CPU_UTILS_H
 
 namespace platform {
     /**
@@ -16,3 +17,5 @@ namespace platform {
         return ((uint64_t) high << 32) | low;
     }
 }
+
+#endif
