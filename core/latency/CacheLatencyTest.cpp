@@ -17,13 +17,15 @@ CacheLatencyTest::~CacheLatencyTest() {
   for (Node *ptr : allocated_memory) {
     delete[] ptr;
   }
+  static_array.clear();
 }
 
 CacheLatencyTest::Node *
 CacheLatencyTest::create_pointer_chain(size_t size_bytes) {
   size_t num_nodes = size_bytes / sizeof(Node);
-  if (num_nodes < 2)
+  if (num_nodes < 2) {
     num_nodes = 2;
+  }
 
   Node *nodes = new Node[num_nodes];
   allocated_memory.push_back(nodes);
@@ -51,15 +53,33 @@ CacheLatencyTest::create_pointer_chain(size_t size_bytes) {
   return &nodes[indices[0]];
 }
 
-CacheLatencyTest::LatencyResult
-CacheLatencyTest::measure_latency(size_t size_bytes, uint64_t chase_count) {
-  Node *head = create_pointer_chain(size_bytes);
-
-  // Warm up the cache
-  Node *p = head;
-  for (uint64_t i = 0; i < 1000; ++i) {
-    p = p->next;
+CacheLatencyTest::Node *
+CacheLatencyTest::create_sequential_array(size_t size_bytes) {
+  size_t num_nodes = size_bytes / sizeof(Node);
+  if (num_nodes < 2) {
+    num_nodes = 2;
   }
+
+  static_array.resize(num_nodes);
+
+  // Link nodes sequentially
+  for (size_t i = 0; i < num_nodes - 1; ++i) {
+    static_array[i].next = &static_array[i + 1];
+  }
+
+  // Complete the circular chain
+  static_array[num_nodes - 1].next = &static_array[0];
+
+  return &static_array[0];
+}
+
+CacheLatencyTest::LatencyResult
+CacheLatencyTest::measure_latency(size_t size_bytes, uint64_t chase_count,
+                                  AccessMode mode) {
+  Node *head = (mode == LINKED_LIST) ? create_pointer_chain(size_bytes)
+                                     : create_sequential_array(size_bytes);
+
+  Node *p = head;
 
   uint64_t start = platform::rdtsc();
   for (uint64_t i = 0; i < chase_count; ++i) {
@@ -135,10 +155,19 @@ CacheLatencyTest::run_comprehensive_test() {
 
   for (size_t size : test_sizes) {
     std::cout << "Testing " << (size / 1024) << " KB... " << std::flush;
-    LatencyResult result = measure_latency(size);
-    results.push_back(result);
-    std::cout << std::fixed << std::setprecision(2) << result.avg_cycles
-              << " cycles (" << result.avg_nanosecs << " ns)" << std::endl;
+
+    LatencyResult linked_result = measure_latency(size, 10000000, LINKED_LIST);
+    LatencyResult array_result =
+        measure_latency(size, 10000000, SEQUENTIAL_ARRAY);
+
+    results.push_back(linked_result);
+    results.push_back(array_result);
+
+    std::cout << "Linked List: " << std::fixed << std::setprecision(2)
+              << linked_result.avg_cycles << " cycles ("
+              << linked_result.avg_nanosecs << " ns) | "
+              << "Sequential Array: " << array_result.avg_cycles << " cycles ("
+              << array_result.avg_nanosecs << " ns)" << std::endl;
   }
 
   std::cout << "Cache latency tests completed!" << std::endl;
