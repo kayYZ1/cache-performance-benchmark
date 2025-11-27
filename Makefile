@@ -14,7 +14,7 @@ CXXFLAGS = -std=c++11 -Wall -Wextra -O2 -g -march=native -fno-omit-frame-pointer
 TARGET = cache_benchmark
 
 # Source files
-SOURCES = main.cpp core/bandwidth/CacheBandwidthTest.cpp core/latency/CacheLatencyTest.cpp
+SOURCES = main.cpp core/bandwidth/CacheBandwidthTest.cpp core/latency/CacheLatencyTest.cpp core/tlb/CacheTLBTest.cpp
 
 # Object files (derived from sources)
 OBJECTS = $(SOURCES:.cpp=.o)
