@@ -8,16 +8,18 @@ int main() {
   std::cout << "Cache performance tests for AMD Ryzen 5 3500U" << std::endl;
   std::cout << "============================================" << std::endl;
 
-  // CacheLatencyTest cacheLatencyTest;
-  // auto results = cacheLatencyTest.run_comprehensive_test();
+  CacheLatencyTest cacheLatencyTest;
+  cacheLatencyTest.run_comprehensive_test();
 
-  // std::cout << std::endl;
+  std::cout << std::endl;
 
-  // CacheBandwidthTest cacheBandwidthTest;
-  // cacheBandwidthTest.run_comprehensive_test();
-  //
+  CacheBandwidthTest cacheBandwidthTest;
+  cacheBandwidthTest.run_comprehensive_test();
+
+  std::cout << std::endl;
+
   CacheTlbTest cacheTlbTest;
-  auto results = cacheTlbTest.run_comprehensive_test();
+  cacheTlbTest.run_comprehensive_test();
 
   return 0;
 }

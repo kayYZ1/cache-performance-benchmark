@@ -4,28 +4,25 @@
 #include <cstdint>
 #include <vector>
 
-/**
- * 4kb page size for this OS
- */
-
 class CacheTlbTest {
-private:
-  std::vector<long long> tlb_miss_container;
-
-  enum AccessPattern { NORMAL, STRIDE };
-
-  void populate_tlb_miss_container();
-
 public:
+  enum class AccessPattern { Normal, Stride };
+
   struct Result {
     double avg_cycles;
+    double median_cycles;
     double avg_nanosecs;
-    uint64_t iterations;
+    double median_nanosecs;
+    std::uint64_t iterations;
   };
 
   Result measure_latency(AccessPattern ap);
-
   std::vector<Result> run_comprehensive_test();
+
+private:
+  std::vector<long long> tlb_miss_container;
+
+  void populate_tlb_miss_container();
 };
 
 #endif
