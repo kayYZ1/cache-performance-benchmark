@@ -36,6 +36,38 @@ Simply execute the compiled binary:
 
 The program will automatically run all configured performance tests and display results in real-time.
 
+### Command Line Arguments
+
+You can run specific tests using command line arguments:
+
+| Argument | Short | Description |
+|----------|-------|-------------|
+| `--latency` | `-l` | Run only the cache latency test |
+| `--bandwidth` | `-b` | Run only the cache bandwidth test |
+| `--tlb` | `-t` | Run only the TLB latency test |
+
+Examples:
+
+```bash
+# Run all tests (default)
+./cache_benchmark
+
+# Run only latency test
+./cache_benchmark -l
+./cache_benchmark --latency
+
+# Run only bandwidth test
+./cache_benchmark -b
+./cache_benchmark --bandwidth
+
+# Run only TLB test
+./cache_benchmark -t
+./cache_benchmark --tlb
+
+# Run multiple specific tests
+./cache_benchmark -l -b
+```
+
 ## Tests Performed
 
 ### 1. Cache Latency Test
@@ -64,6 +96,22 @@ Measures the average bandwidth (in GB/s) for loading cache lines of different si
 
 **Output**: Shows average bandwidth for each test size in both sequential and strided access cases
 
+### 3. TLB Latency Test
+
+Measures Translation Lookaside Buffer (TLB) performance by comparing memory access latencies between normal sequential access and strided access patterns that deliberately cause TLB misses.
+
+**Configuration**:
+- Page size: 4KB
+- Number of pages: 2048
+- Iterations: ~8.4 million per run
+- Runs: 7 (for statistical reliability)
+
+**Access Patterns**:
+- **Normal Access**: Sequential access within contiguous memory, benefiting from TLB hits
+- **Stride Access**: Accesses one element per page, forcing TLB lookups for each access
+
+**Output**: Shows average and median latency in CPU cycles and nanoseconds for both access patterns
+
 ## Understanding Results
 
 ### Latency Test Interpretation
@@ -83,6 +131,14 @@ Clear "steps" in the latency curve indicate cache level boundaries.
 - **Low bandwidth (<10 GB/s)**: Main memory access
 
 Sequential access generally provides higher bandwidth than strided access due to improved cache locality.
+
+### TLB Test Interpretation
+
+- **Normal access latency**: Should be low as TLB entries remain cached
+- **Stride access latency**: Higher latency indicates TLB misses when accessing different pages
+- **Latency difference**: The gap between stride and normal access reveals TLB miss penalty
+
+A significant increase in stride access latency compared to normal access indicates TLB pressure and page table lookup overhead.
 
 ## Technical Details
 
