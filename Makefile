@@ -34,14 +34,16 @@ $(TARGET): $(OBJECTS)
 	$(CC) $(CXXFLAGS) -c $< -o $@
 
 # Run the benchmark with optimal settings
+# Usage: make run [ARGS="--latency"]
 run: $(TARGET)
 	@echo "Running cache benchmark on CPU core $(CPU_CORE)..."
-	@taskset -c $(CPU_CORE) ./$(TARGET)
+	@taskset -c $(CPU_CORE) ./$(TARGET) $(ARGS)
 
 # Run with elevated priority (requires sudo for real-time priority)
+# Usage: make run-priority [ARGS="--bandwidth"]
 run-priority: $(TARGET)
 	@echo "Running with high priority on CPU core $(CPU_CORE)..."
-	@sudo nice -n -20 taskset -c $(CPU_CORE) ./$(TARGET)
+	@sudo nice -n -20 taskset -c $(CPU_CORE) ./$(TARGET) $(ARGS)
 
 # Check current CPU frequency governor
 check-governor:
